@@ -77,8 +77,8 @@ def __init__():
     
     reddit = setupReddit()
     # Post to reddit
-   # post = reddit.post("Troy", "Weekly Events for " + CalendarManager.getMonth() + "/" + str(CalendarManager.getDay()) + "/" + CalendarManager.getYear(), text)
-   # reddit.crosspost(post, "rpi")
+    post = reddit.post("Troy", "Weekly Events for " + CalendarManager.getMonth() + "/" + str(CalendarManager.getDay()) + "/" + CalendarManager.getYear(), text)
+    reddit.crosspost(post, "rpi")
     
 def setupReddit():
     # Find credential file
