@@ -3,12 +3,12 @@ Created on Jun 26, 2018
 
 @author: john
 '''
-from rcalendar import EventCalendar
+from event_calendar import *
 from ical import CalendarManager
 from reddit import RedditManager
 
 
-DEBUG = False
+DEBUG = True
 
 
 def __init__():
@@ -21,11 +21,11 @@ def __init__():
 
     # Download rcalendar files
     print("Downloading rcalendar files...")
-    CalendarManager.downloadCalendarFile(TROY_ART, "art.ics")
-    CalendarManager.downloadCalendarFile(TROY_FESTIVALS, "festivals.ics")
+    CalendarManager.download_calendar_file(TROY_ART, "art.ics")
+    CalendarManager.download_calendar_file(TROY_FESTIVALS, "festivals.ics")
     #CalendarManager.downloadCalendarFile(TROY_KIDS, "kids.ics")
-    CalendarManager.downloadCalendarFile(TROY_MUSIC, "music.ics")
-    CalendarManager.downloadCalendarFile(TROY_OTHER, "other.ics")
+    CalendarManager.download_calendar_file(TROY_MUSIC, "music.ics")
+    CalendarManager.download_calendar_file(TROY_OTHER, "other.ics")
 
     # Begin parsing
     artCal = EventCalendar("art.ics")
@@ -77,10 +77,9 @@ def __init__():
     f = open("log.txt", 'w')
 
     f.write(text)
-
-    reddit = setupReddit()
-
     if not DEBUG:
+        reddit = setupReddit()
+
         # Post to reddit
         post = reddit.post("Troy", "Weekly Events for " + CalendarManager.getMonth() +
                            "/" + str(CalendarManager.getDay()) + "/" + CalendarManager.getYear(), text)
@@ -171,6 +170,17 @@ def parseEvents(eventList):
 def computeEvents(eventList):
     calendar = dict()
 
+    # Compute today and events for the next (7) days
+    valid_dates = [ ]
+
+    today = CalendarManager.get_today()
+    valid_dates.append(today)
+
+    next_date = today.get_tomorrow()
+    for i in range(0,7):
+        valid_dates.append(next_date)
+        next_date = next_date.get_tomorrow()
+    
     for event in eventList:
         dateStr = str(event.get_start())
 
@@ -179,18 +189,36 @@ def computeEvents(eventList):
         month = dateStr[5:7]
         day = int(dateStr[8:10])
 
+        year_int = int(year)
+        month_int = CalendarManager.get_month_int(month)
+
+        # Create a Date Object and compare it to see if it is valid 
+        event_date = Date(month_int, day, year_int)
+        valid = False 
+
+        for date in valid_dates:
+            if (date.equals(event_date)):
+                valid = True 
+                break 
+        
+        if not valid: 
+            continue 
+
+        print("Hello!")
+
         # Throw out events not within a week of the future
-        if day - CalendarManager.getDay() > 0 and day - CalendarManager.getDay() <= 7:
+        '''if day - CalendarManager.get_day() > 0 and day - CalendarManager.get_day() <= 7:
             pass
         else:
             continue
 
         # Make sure it is part of this year & month
-        if not CalendarManager.getYear() == year:
+        if not CalendarManager.get_year() == year:
             continue
 
-        if not CalendarManager.getMonth() == month:
-            continue
+        if not CalendarManager.get_month() == month:
+            continue '''
+        
 
         try:
             # Oh noes
@@ -208,7 +236,7 @@ def computeEvents(eventList):
         # print("day: " + day)
 
         print("date: " + dateStr)
-        print("today:" + CalendarManager.getDateString())
+        print("today:" + CalendarManager.get_date_string())
 
     return calendar
 
