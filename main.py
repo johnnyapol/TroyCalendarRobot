@@ -171,16 +171,16 @@ def computeEvents(eventList):
     calendar = dict()
 
     # Compute today and events for the next (7) days
-    valid_dates = [ ]
+    valid_dates = []
 
     today = CalendarManager.get_today()
     valid_dates.append(today)
 
     next_date = today.get_tomorrow()
-    for i in range(0,7):
+    for i in range(0, 7):
         valid_dates.append(next_date)
         next_date = next_date.get_tomorrow()
-    
+
     for event in eventList:
         dateStr = str(event.get_start())
 
@@ -192,33 +192,17 @@ def computeEvents(eventList):
         year_int = int(year)
         month_int = CalendarManager.get_month_int(month)
 
-        # Create a Date Object and compare it to see if it is valid 
+        # Create a Date Object and compare it to see if it is valid
         event_date = Date(month_int, day, year_int)
-        valid = False 
+        valid = False
 
         for date in valid_dates:
             if (date.equals(event_date)):
-                valid = True 
-                break 
-        
-        if not valid: 
-            continue 
+                valid = True
+                break
 
-        print("Hello!")
-
-        # Throw out events not within a week of the future
-        '''if day - CalendarManager.get_day() > 0 and day - CalendarManager.get_day() <= 7:
-            pass
-        else:
+        if not valid:
             continue
-
-        # Make sure it is part of this year & month
-        if not CalendarManager.get_year() == year:
-            continue
-
-        if not CalendarManager.get_month() == month:
-            continue '''
-        
 
         try:
             # Oh noes
